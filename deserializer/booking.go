@@ -30,11 +30,22 @@ func stringToDay(dayStr string) state.Day {
 
 func deserializeBookingTime(str string) state.BookingTime {
 	lst := strings.Split(str, "/")
-	day := stringToDay(lst[0])
-	hour, _ := strconv.Atoi(str)
-	return state.BookingTime{
-		Day: day,
-		Hour: hour,
-
+	if len(lst) == 3 {
+		day := stringToDay(lst[0])
+		hour, _ := strconv.Atoi(lst[1])
+		minute, _ := strconv.Atoi(lst[2])
+		return state.BookingTime{
+			Day: day,
+			Hour: hour,
+			Minute: minute,
+		}
+	} else if len(lst) == 2 {
+		hour, _ := strconv.Atoi(lst[0])
+		minute, _ := strconv.Atoi(lst[1])
+		return state.BookingTime{
+			Hour: hour,
+			Minute: minute,
+		}
 	}
+	return state.BookingTime{}
 }

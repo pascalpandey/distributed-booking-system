@@ -1,12 +1,13 @@
 package server
 
 import (
-	"net"
+	"fmt"
 	"log"
+	"net"
 )
 
-func InitUDPServer() *net.UDPConn {
-	addr := ":8080"
+func InitUDPServer(port int) *net.UDPConn {
+	addr := fmt.Sprintf(":%d", port)
 	udpAddr, err := net.ResolveUDPAddr("udp", addr)
 	if err != nil {
 		log.Printf("Error resolving address: %s", err)
@@ -18,7 +19,6 @@ func InitUDPServer() *net.UDPConn {
 		log.Printf("Error starting UDP server: %s", err)
 		return nil
 	}
-	defer conn.Close()
 
 	log.Printf("UDP server listening on %s", addr)
 

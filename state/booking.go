@@ -5,25 +5,26 @@ import (
 )
 
 type Booking struct {
-	startTime      BookingTime
-	endTime        BookingTime
+	StartTime      BookingTime
+	EndTime        BookingTime
 	confirmationId uuid.UUID
 }
 
-type Day int
+func (booking *Booking) intersects(startTime BookingTime, endTime BookingTime) bool {
+	startTimeMin := startTime.ToMinute()
+	endTimeMin := endTime.ToMinute()
+	bookingStartTimeMin := booking.StartTime.ToMinute()
+	if bookingStartTimeMin < endTimeMin && bookingStartTimeMin > startTimeMin {
+		return true
+	}
+	return false
+}
 
-const (
-	Monday Day = iota + 1
-	Tuesday
-	Wednesday
-	Thursday
-	Friday
-	Saturday
-	Sunday
-)
+func (booking *Booking) Offset(offsetTime BookingTime) {
+	booking.StartTime = booking.StartTime.Add(offsetTime)
+	booking.EndTime = booking.EndTime.Subtract(offsetTime)
+}
 
-type BookingTime struct {
-	Day    Day
-	Hour   int
-	Minute int
+func (booking *Booking) Extend(extendTime BookingTime) {
+	booking.EndTime = booking.EndTime.Subtract(extendTime)
 }
