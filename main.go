@@ -11,9 +11,9 @@ import (
 )
 
 func main() {
-    useCache := flag.Bool("cache", false, "Enable caching")
+	useCache := flag.Bool("cache", false, "Enable caching")
 	port := flag.Int("port", 8080, "UDP server port")
-    flag.Parse()
+	flag.Parse()
 
 	conn := server.InitUDPServer(*port)
 	if conn == nil {
@@ -22,13 +22,13 @@ func main() {
 
 	state := state.InitState()
 
-    var cache map[string]string
-    if *useCache {
-        cache = map[string]string{}
-    }
-    
+	var cache map[string]string
+	if *useCache {
+		cache = map[string]string{}
+	}
+
 	for {
-        buffer := make([]byte, 1024)
+		buffer := make([]byte, 1024)
 		n, clientAddr, err := conn.ReadFromUDP(buffer)
 		if err != nil {
 			log.Printf("Error reading from UDP: %s", err)
@@ -48,6 +48,6 @@ func main() {
 		}
 		handler.HandleMessage(message)
 
-        log.Printf("State Now: %v", state)
+		log.Printf("State Now: %v", state)
 	}
 }

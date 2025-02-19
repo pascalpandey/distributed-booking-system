@@ -35,15 +35,15 @@ func deserializeBookingTime(str string) state.BookingTime {
 		hour, _ := strconv.Atoi(lst[1])
 		minute, _ := strconv.Atoi(lst[2])
 		return state.BookingTime{
-			Day: day,
-			Hour: hour,
+			Day:    day,
+			Hour:   hour,
 			Minute: minute,
 		}
 	} else if len(lst) == 2 {
 		hour, _ := strconv.Atoi(lst[0])
 		minute, _ := strconv.Atoi(lst[1])
 		return state.BookingTime{
-			Hour: hour,
+			Hour:   hour,
 			Minute: minute,
 		}
 	}

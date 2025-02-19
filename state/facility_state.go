@@ -36,7 +36,7 @@ func (facilityState *FacilityState) Book(startTime BookingTime, endTime BookingT
 }
 
 func (facilityState *FacilityState) Cancel(confirmationId uuid.UUID) *Booking {
-	for i, booking := range  facilityState.Bookings {
+	for i, booking := range facilityState.Bookings {
 		if booking.confirmationId == confirmationId {
 			facilityState.Bookings = append(facilityState.Bookings[:i], facilityState.Bookings[i+1:]...)
 		}
@@ -58,5 +58,3 @@ func (facilityState *FacilityState) NotifyObservers(message string) {
 		observer.SendMessage(message)
 	}
 }
-
-

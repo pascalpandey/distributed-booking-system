@@ -16,7 +16,7 @@ func ConfirmationIdWithBookingTime(body []string) (uuid.UUID, state.BookingTime)
 	return confirmationId, deserializeBookingTime(body[1])
 }
 
-func ConfirmationId(body []string) (uuid.UUID) {
+func ConfirmationId(body []string) uuid.UUID {
 	confirmationId, _ := uuid.Parse(body[0])
 	return confirmationId
 }

@@ -19,7 +19,7 @@ const (
 )
 
 func (bookingTime *BookingTime) ToMinute() int {
-	return bookingTime.Day * 24 * 60 + bookingTime.Hour * 60 + bookingTime.Minute
+	return bookingTime.Day*24*60 + bookingTime.Hour*60 + bookingTime.Minute
 }
 
 func (bookingTime BookingTime) Add(addTime BookingTime) BookingTime {

@@ -17,7 +17,7 @@ func InitState() State {
 		for i := 1; i <= 10; i++ {
 			facilityName := roomType + strconv.Itoa(i)
 			state[facilityName] = &FacilityState{
-				Bookings: []*Booking{},
+				Bookings:  []*Booking{},
 				Observers: map[uuid.UUID]*client.Client{},
 			}
 		}
