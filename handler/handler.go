@@ -37,6 +37,7 @@ func (handler *Handler) HandleMessage(message string) {
 		facility, startTime, endTime := deserializer.FacilityWithBooking(body)
 		available, err := handler.State.QueryAvailability(facility, startTime, endTime)
 		reply := serializer.ReplyQueryAvailability(available, err)
+		handler.Cache[requestId] = reply
 		handler.CallingClient.SendMessage(reply)
 
 	case Book:
@@ -47,6 +48,7 @@ func (handler *Handler) HandleMessage(message string) {
 			observers.Notify(notification)
 		}
 		reply := serializer.ReplyBook(confirmationId, err)
+		handler.Cache[requestId] = reply
 		handler.CallingClient.SendMessage(reply)
 
 	case OffsetBooking:
@@ -57,12 +59,14 @@ func (handler *Handler) HandleMessage(message string) {
 			observers.Notify(notification)
 		}
 		reply := serializer.ReplyStatus(err)
+		handler.Cache[requestId] = reply
 		handler.CallingClient.SendMessage(reply)
 
 	case MonitorAvailability:
 		facility, monitorDuration := deserializer.FacilityWithMonitorDuration(body)
 		err := handler.State.Monitor(handler.CallingClient, facility, monitorDuration)
 		reply := serializer.ReplyStatus(err)
+		handler.Cache[requestId] = reply
 		handler.CallingClient.SendMessage(reply)
 
 	case ExtendBooking:
@@ -73,6 +77,7 @@ func (handler *Handler) HandleMessage(message string) {
 			observers.Notify(notification)
 		}
 		reply := serializer.ReplyStatus(err)
+		handler.Cache[requestId] = reply
 		handler.CallingClient.SendMessage(reply)
 
 	case CancelBooking:
@@ -83,7 +88,7 @@ func (handler *Handler) HandleMessage(message string) {
 			observers.Notify(notification)
 		}
 		reply := serializer.ReplyStatus(err)
+		handler.Cache[requestId] = reply
 		handler.CallingClient.SendMessage(reply)
-
 	}
 }
