@@ -54,11 +54,11 @@ func (state *State) OffsetBooking(confirmationId uuid.UUID, offsetTime BookingTi
 
 	var reqStart, reqEnd BookingTime
 	if offsetTime.ToMinute() > 0 {
-		reqStart = booking.EndTime
+		reqStart = booking.EndTime.Add(BookingTime{Minute: 1})
 		reqEnd = booking.EndTime.Add(offsetTime)
 	} else {
 		reqStart = booking.StartTime.Subtract(offsetTime)
-		reqEnd = booking.StartTime
+		reqEnd = booking.StartTime.Subtract(BookingTime{Minute: 1})
 	}
 	if !facilityState.QueryAvailability(reqStart, reqEnd) {
 		return nil, fmt.Errorf("cannot offset booking with confirmationId %v as there are conflicts", confirmationId)
@@ -74,7 +74,7 @@ func (state *State) ExtendBooking(confirmationId uuid.UUID, extendTime BookingTi
 		return nil, fmt.Errorf("booking with confirmationId %v not found", confirmationId)
 	}
 
-	reqStart := booking.EndTime
+	reqStart := booking.EndTime.Add(BookingTime{Minute: 1})
 	reqEnd := booking.EndTime.Add(extendTime)
 	if !facilityState.QueryAvailability(reqStart, reqEnd) {
 		return nil, fmt.Errorf("cannot extend booking with confirmationId %v as there are conflicts", confirmationId)
@@ -84,13 +84,13 @@ func (state *State) ExtendBooking(confirmationId uuid.UUID, extendTime BookingTi
 	return facilityState.Observers, nil
 }
 
-func (state *State) CancelBooking(confirmationId uuid.UUID) (Observers, error) {
+func (state *State) CancelBooking(confirmationId uuid.UUID) (Observers, bool) {
 	facilityState, booking := state.getBooking(confirmationId)
 	if booking == nil {
-		return nil, fmt.Errorf("booking with confirmationId %v not found", confirmationId)
+		return nil, true
 	}
 	facilityState.Cancel(confirmationId)
-	return facilityState.Observers, nil
+	return facilityState.Observers, false
 }
 
 func (state *State) Monitor(client *client.Client, facility Facility, monitorDuration time.Duration) error {
@@ -105,7 +105,7 @@ func (state *State) Monitor(client *client.Client, facility Facility, monitorDur
 func (state State) getBooking(confirmationId uuid.UUID) (*FacilityState, *Booking) {
 	for facility, facilityState := range state {
 		for _, booking := range facilityState.Bookings {
-			if booking.confirmationId == confirmationId {
+			if booking.ConfirmationId == confirmationId {
 				return state[facility], booking
 			}
 		}

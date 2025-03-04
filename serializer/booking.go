@@ -6,7 +6,7 @@ import (
 	"github.com/distributed-systems-be/state"
 )
 
-func dayToString(day state.Day) string {
+func DayToString(day state.Day) string {
 	switch day {
 	case state.Monday:
 		return "Monday"
@@ -31,5 +31,5 @@ func formatBookingTime(bookingTime state.BookingTime) string {
 	if bookingTime.Day == 0 {
 		return fmt.Sprintf("%d/%d", bookingTime.Hour, bookingTime.Minute)
 	}
-	return fmt.Sprintf("%s/%d/%d", dayToString(bookingTime.Day), bookingTime.Hour, bookingTime.Minute)
+	return fmt.Sprintf("%s/%d/%d", DayToString(bookingTime.Day), bookingTime.Hour, bookingTime.Minute)
 }

@@ -1,6 +1,7 @@
 package deserializer
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/distributed-systems-be/state"
@@ -22,6 +23,6 @@ func ConfirmationId(body []string) uuid.UUID {
 }
 
 func FacilityWithMonitorDuration(body []string) (state.Facility, time.Duration) {
-	duration, _ := time.ParseDuration(body[1])
-	return body[0], duration * time.Second
+	duration, _ := strconv.Atoi(body[1])
+	return body[0], time.Duration(duration) * time.Second
 }

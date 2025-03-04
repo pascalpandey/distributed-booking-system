@@ -29,7 +29,7 @@ func (facilityState *FacilityState) Book(startTime BookingTime, endTime BookingT
 	newBooking := Booking{
 		StartTime:      startTime,
 		EndTime:        endTime,
-		confirmationId: confirmationId,
+		ConfirmationId: confirmationId,
 	}
 	facilityState.Bookings = append(facilityState.Bookings, &newBooking)
 	return confirmationId
@@ -37,7 +37,7 @@ func (facilityState *FacilityState) Book(startTime BookingTime, endTime BookingT
 
 func (facilityState *FacilityState) Cancel(confirmationId uuid.UUID) *Booking {
 	for i, booking := range facilityState.Bookings {
-		if booking.confirmationId == confirmationId {
+		if booking.ConfirmationId == confirmationId {
 			facilityState.Bookings = append(facilityState.Bookings[:i], facilityState.Bookings[i+1:]...)
 		}
 	}

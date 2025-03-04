@@ -6,26 +6,33 @@ import (
 	"github.com/google/uuid"
 )
 
-func ReplyQueryAvailability(available bool, err error) string {
+func ReplyQueryAvailability(requestId string, available bool, err error) string {
 	if err != nil {
 		return fmt.Sprintf("ERROR,%s", err.Error())
 	}
 	if available {
-		return "AVAILABLE"
+		return fmt.Sprintf("%s,AVAILABLE", requestId)
 	}
-	return "ERROR,facility already booked for the given period"
+	return fmt.Sprintf("%s,ERROR,facility already booked for the given period", requestId)
 }
 
-func ReplyBook(confirmationId uuid.UUID, err error) string {
+func ReplyBook(requestId string, confirmationId uuid.UUID, err error) string {
 	if err != nil {
-		return fmt.Sprintf("ERROR,%s", err.Error())
+		return fmt.Sprintf("%s,ERROR,%s", requestId, err.Error())
 	}
-	return fmt.Sprintf("SUCCESS,%s", confirmationId)
+	return fmt.Sprintf("%s,SUCCESS,%s", requestId, confirmationId)
 }
 
-func ReplyStatus(err error) string {
-	if err != nil {
-		return fmt.Sprintf("ERROR,%s", err.Error())
+func ReplyCancel(requestId string, confirmationId uuid.UUID, alreadyCancelled bool) string {
+	if alreadyCancelled {
+		return fmt.Sprintf("%s,SUCCESS,booking with confirmationId %s already cancelled", requestId, confirmationId)
 	}
-	return "SUCCESS"
+	return  fmt.Sprintf("%s,SUCCESS", requestId)
+}
+
+func ReplyStatus(requestId string, err error) string {
+	if err != nil {
+		return fmt.Sprintf("%s,ERROR,%s", requestId, err.Error())
+	}
+	return  fmt.Sprintf("%s,SUCCESS", requestId)
 }

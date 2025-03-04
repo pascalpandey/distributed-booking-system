@@ -36,59 +36,91 @@ func (handler *Handler) HandleMessage(message string) {
 	case QueryAvailability:
 		facility, startTime, endTime := deserializer.FacilityWithBooking(body)
 		available, err := handler.State.QueryAvailability(facility, startTime, endTime)
-		reply := serializer.ReplyQueryAvailability(available, err)
-		handler.Cache[requestId] = reply
+		reply := serializer.ReplyQueryAvailability(requestId, available, err)
+
+		if handler.Cache != nil {
+			handler.Cache[requestId] = reply
+		}
+
 		handler.CallingClient.SendMessage(reply)
 
 	case Book:
 		facility, startTime, endTime := deserializer.FacilityWithBooking(body)
 		observers, confirmationId, err := handler.State.Book(facility, startTime, endTime)
+
 		if err == nil {
 			notification := serializer.NotifyBook(confirmationId, startTime, endTime)
 			observers.Notify(notification)
 		}
-		reply := serializer.ReplyBook(confirmationId, err)
-		handler.Cache[requestId] = reply
+
+		reply := serializer.ReplyBook(requestId, confirmationId, err)
+
+		if handler.Cache != nil {
+			handler.Cache[requestId] = reply
+		}
+
 		handler.CallingClient.SendMessage(reply)
 
 	case OffsetBooking:
 		confirmationId, offsetTime := deserializer.ConfirmationIdWithBookingTime(body)
 		observers, err := handler.State.OffsetBooking(confirmationId, offsetTime)
+
 		if err == nil {
 			notification := serializer.NotifyOffset(confirmationId, offsetTime)
 			observers.Notify(notification)
 		}
-		reply := serializer.ReplyStatus(err)
-		handler.Cache[requestId] = reply
+
+		reply := serializer.ReplyStatus(requestId, err)
+
+		if handler.Cache != nil {
+			handler.Cache[requestId] = reply
+		}
+
 		handler.CallingClient.SendMessage(reply)
 
 	case MonitorAvailability:
 		facility, monitorDuration := deserializer.FacilityWithMonitorDuration(body)
 		err := handler.State.Monitor(handler.CallingClient, facility, monitorDuration)
-		reply := serializer.ReplyStatus(err)
-		handler.Cache[requestId] = reply
+		reply := serializer.ReplyStatus(requestId, err)
+
+		if handler.Cache != nil {
+			handler.Cache[requestId] = reply
+		}
+
 		handler.CallingClient.SendMessage(reply)
 
 	case ExtendBooking:
 		confirmationId, extendTime := deserializer.ConfirmationIdWithBookingTime(body)
 		observers, err := handler.State.ExtendBooking(confirmationId, extendTime)
+
 		if err == nil {
 			notification := serializer.NotifyExtend(confirmationId, extendTime)
 			observers.Notify(notification)
 		}
-		reply := serializer.ReplyStatus(err)
-		handler.Cache[requestId] = reply
+
+		reply := serializer.ReplyStatus(requestId, err)
+
+		if handler.Cache != nil {
+			handler.Cache[requestId] = reply
+		}
+
 		handler.CallingClient.SendMessage(reply)
 
 	case CancelBooking:
 		confirmationId := deserializer.ConfirmationId(body)
-		observers, err := handler.State.CancelBooking(confirmationId)
-		if err == nil {
+		observers, alreadyCancelled := handler.State.CancelBooking(confirmationId)
+
+		if !alreadyCancelled {
 			notification := serializer.NotifyCancel(confirmationId)
 			observers.Notify(notification)
 		}
-		reply := serializer.ReplyStatus(err)
-		handler.Cache[requestId] = reply
+
+		reply := serializer.ReplyCancel(requestId, confirmationId, alreadyCancelled)
+
+		if handler.Cache != nil {
+			handler.Cache[requestId] = reply
+		}
+
 		handler.CallingClient.SendMessage(reply)
 	}
 }

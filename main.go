@@ -6,6 +6,7 @@ import (
 
 	"github.com/distributed-systems-be/client"
 	"github.com/distributed-systems-be/handler"
+	"github.com/distributed-systems-be/serializer"
 	"github.com/distributed-systems-be/server"
 	"github.com/distributed-systems-be/state"
 )
@@ -48,6 +49,20 @@ func main() {
 		}
 		handler.HandleMessage(message)
 
-		log.Printf("State Now: %v", state)
+        log.Println("State Now:")
+        for key, facilityState := range state {
+            log.Printf("%s bookings: ", key)
+            for _, booking := range facilityState.Bookings {
+                log.Printf("[%s/%02d/%02d - %s/%02d/%02d, %s] ", 
+                    serializer.DayToString(booking.StartTime.Day), booking.StartTime.Hour, booking.StartTime.Minute,
+                    serializer.DayToString(booking.EndTime.Day), booking.EndTime.Hour, booking.EndTime.Minute,
+                    booking.ConfirmationId.String(),
+                )
+            }
+            log.Printf("%s observers: ", key)
+            for uuid, observer := range facilityState.Observers {
+                log.Printf("(%s -> %+v) ", uuid, observer)
+            }
+        }
 	}
 }
