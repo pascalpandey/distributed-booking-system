@@ -1,7 +1,7 @@
 package state
 
 import (
-	"github.com/distributed-systems-be/client"
+	"sc4051-server/client"
 	"github.com/google/uuid"
 )
 

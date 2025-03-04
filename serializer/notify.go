@@ -3,7 +3,7 @@ package serializer
 import (
 	"fmt"
 
-	"github.com/distributed-systems-be/state"
+	"sc4051-server/state"
 	"github.com/google/uuid"
 )
 

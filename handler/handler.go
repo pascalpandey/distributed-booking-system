@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"github.com/distributed-systems-be/client"
-	"github.com/distributed-systems-be/deserializer"
-	"github.com/distributed-systems-be/serializer"
-	"github.com/distributed-systems-be/state"
+	"sc4051-server/client"
+	"sc4051-server/deserializer"
+	"sc4051-server/serializer"
+	"sc4051-server/state"
 )
 
 const (

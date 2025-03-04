@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/distributed-systems-be/client"
+	"sc4051-server/client"
 	"github.com/google/uuid"
 )
 

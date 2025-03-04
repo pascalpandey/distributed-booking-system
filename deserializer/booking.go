@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/distributed-systems-be/state"
+	"sc4051-server/state"
 )
 
 func stringToDay(dayStr string) state.Day {

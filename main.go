@@ -4,11 +4,11 @@ import (
 	"flag"
 	"log"
 
-	"github.com/distributed-systems-be/client"
-	"github.com/distributed-systems-be/handler"
-	"github.com/distributed-systems-be/serializer"
-	"github.com/distributed-systems-be/server"
-	"github.com/distributed-systems-be/state"
+	"sc4051-server/client"
+	"sc4051-server/handler"
+	"sc4051-server/serializer"
+	"sc4051-server/server"
+	"sc4051-server/state"
 )
 
 func main() {

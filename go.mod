@@ -1,4 +1,4 @@
-module github.com/distributed-systems-be
+module sc4051-server
 
 go 1.23.2
 
