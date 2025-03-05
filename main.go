@@ -48,21 +48,37 @@ func main() {
 			Cache: cache,
 		}
 		handler.HandleMessage(message)
-
-        log.Println("State Now:")
+		
+		log.Println("State now:")
         for key, facilityState := range state {
-            log.Printf("%s bookings: ", key)
-            for _, booking := range facilityState.Bookings {
-                log.Printf("[%s/%02d/%02d - %s/%02d/%02d, %s] ", 
-                    serializer.DayToString(booking.StartTime.Day), booking.StartTime.Hour, booking.StartTime.Minute,
-                    serializer.DayToString(booking.EndTime.Day), booking.EndTime.Hour, booking.EndTime.Minute,
-                    booking.ConfirmationId.String(),
-                )
-            }
-            log.Printf("%s observers: ", key)
-            for uuid, observer := range facilityState.Observers {
-                log.Printf("(%s -> %+v) ", uuid, observer)
-            }
-        }
+			if len(facilityState.Bookings) > 0 {
+				log.Printf("📅 %s BOOKINGS:", key)
+				for i, booking := range facilityState.Bookings {
+					log.Printf("  [%d] %s/%02d:%02d - %s/%02d:%02d | ID: %s",
+						i+1,
+						serializer.DayToString(booking.StartTime.Day), 
+						booking.StartTime.Hour, 
+						booking.StartTime.Minute,
+						serializer.DayToString(booking.EndTime.Day), 
+						booking.EndTime.Hour, 
+						booking.EndTime.Minute,
+						booking.ConfirmationId,
+					)
+				}
+			}
+			
+			if len(facilityState.Observers) > 0 {
+				log.Printf("👁 %s OBSERVERS:", key)
+				i := 1
+				for uuid, observer := range facilityState.Observers {
+					log.Printf("  [%d] UUID: %s | Address: %+v", 
+						i, 
+						uuid, 
+						observer.Addr,
+					)
+					i++
+				}
+			}
+		}
 	}
 }

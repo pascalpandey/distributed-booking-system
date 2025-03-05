@@ -1,13 +1,9 @@
 package state
 
-import (
-	"github.com/google/uuid"
-)
-
 type Booking struct {
 	StartTime      BookingTime
 	EndTime        BookingTime
-	ConfirmationId uuid.UUID
+	ConfirmationId string
 }
 
 func (booking *Booking) intersects(startTime BookingTime, endTime BookingTime) bool {

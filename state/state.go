@@ -33,20 +33,20 @@ func (state *State) QueryAvailability(facility Facility, startTime BookingTime, 
 	return facilityState.QueryAvailability(startTime, endTime), nil
 }
 
-func (state *State) Book(facility Facility, startTime BookingTime, endTime BookingTime) (Observers, uuid.UUID, error) {
+func (state *State) Book(facility Facility, startTime BookingTime, endTime BookingTime) (Observers, string, error) {
 	facilityState, found := (*state)[facility]
 	if !found {
-		return nil, uuid.Nil, fmt.Errorf("facility %v not found", facility)
+		return nil, "", fmt.Errorf("facility %v not found", facility)
 	}
 	if !facilityState.QueryAvailability(startTime, endTime) {
-		return nil, uuid.Nil, fmt.Errorf("facility %v already booked for that period", facility)
+		return nil, "", fmt.Errorf("facility %v already booked for that period", facility)
 	}
 
 	confirmationId := facilityState.Book(startTime, endTime)
 	return facilityState.Observers, confirmationId, nil
 }
 
-func (state *State) OffsetBooking(confirmationId uuid.UUID, offsetTime BookingTime) (Observers, error) {
+func (state *State) OffsetBooking(confirmationId string, offsetTime BookingTime) (Observers, error) {
 	facilityState, booking := state.getBooking(confirmationId)
 	if booking == nil {
 		return nil, fmt.Errorf("booking with confirmationId %v not found", confirmationId)
@@ -68,7 +68,7 @@ func (state *State) OffsetBooking(confirmationId uuid.UUID, offsetTime BookingTi
 	return facilityState.Observers, nil
 }
 
-func (state *State) ExtendBooking(confirmationId uuid.UUID, extendTime BookingTime) (Observers, error) {
+func (state *State) ExtendBooking(confirmationId string, extendTime BookingTime) (Observers, error) {
 	facilityState, booking := state.getBooking(confirmationId)
 	if booking == nil {
 		return nil, fmt.Errorf("booking with confirmationId %v not found", confirmationId)
@@ -84,7 +84,7 @@ func (state *State) ExtendBooking(confirmationId uuid.UUID, extendTime BookingTi
 	return facilityState.Observers, nil
 }
 
-func (state *State) CancelBooking(confirmationId uuid.UUID) (Observers, bool) {
+func (state *State) CancelBooking(confirmationId string) (Observers, bool) {
 	facilityState, booking := state.getBooking(confirmationId)
 	if booking == nil {
 		return nil, true
@@ -102,7 +102,7 @@ func (state *State) Monitor(client *client.Client, facility Facility, monitorDur
 	return nil
 }
 
-func (state State) getBooking(confirmationId uuid.UUID) (*FacilityState, *Booking) {
+func (state State) getBooking(confirmationId string) (*FacilityState, *Booking) {
 	for facility, facilityState := range state {
 		for _, booking := range facilityState.Bookings {
 			if booking.ConfirmationId == confirmationId {

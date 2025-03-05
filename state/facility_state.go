@@ -24,8 +24,8 @@ func (facilityState *FacilityState) QueryAvailability(startTime BookingTime, end
 	return true
 }
 
-func (facilityState *FacilityState) Book(startTime BookingTime, endTime BookingTime) uuid.UUID {
-	confirmationId := uuid.New()
+func (facilityState *FacilityState) Book(startTime BookingTime, endTime BookingTime) string {
+	confirmationId := "CONF-" + uuid.New().String()
 	newBooking := Booking{
 		StartTime:      startTime,
 		EndTime:        endTime,
@@ -35,7 +35,7 @@ func (facilityState *FacilityState) Book(startTime BookingTime, endTime BookingT
 	return confirmationId
 }
 
-func (facilityState *FacilityState) Cancel(confirmationId uuid.UUID) *Booking {
+func (facilityState *FacilityState) Cancel(confirmationId string) *Booking {
 	for i, booking := range facilityState.Bookings {
 		if booking.ConfirmationId == confirmationId {
 			facilityState.Bookings = append(facilityState.Bookings[:i], facilityState.Bookings[i+1:]...)
