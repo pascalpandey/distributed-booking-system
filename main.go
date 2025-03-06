@@ -13,6 +13,7 @@ import (
 
 func main() {
 	useCache := flag.Bool("cache", false, "Enable caching")
+	useDrop := flag.Bool("drop", false, "Drop every other packet")
 	port := flag.Int("port", 8080, "UDP server port")
 	flag.Parse()
 
@@ -37,6 +38,16 @@ func main() {
 		}
 
 		message := string(buffer[:n])
+		drop := true
+		if *useDrop {
+			if drop {
+				drop = false
+				log.Printf("Dropped %s from %s", clientAddr, message)
+				continue
+			} else {
+				drop = true
+			}
+		}
 		log.Printf("Received from %s: %s", clientAddr, message)
 
 		handler := handler.Handler{
