@@ -7,7 +7,7 @@ import (
 )
 
 func NotifyBook(confirmationId string, startTime state.BookingTime, endTime state.BookingTime) string {
-	return fmt.Sprintf("MONITOR,NEW,%s,%s,%s", confirmationId, formatBookingTime(startTime), formatBookingTime(endTime))
+	return fmt.Sprintf("MONITOR,BOOK,%s,%s,%s", confirmationId, formatBookingTime(startTime), formatBookingTime(endTime))
 }
 
 func NotifyOffset(confirmationId string, offsetTime state.BookingTime) string {
