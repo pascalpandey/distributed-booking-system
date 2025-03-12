@@ -6,8 +6,8 @@ import (
 	"sc4051-server/state"
 )
 
-func NotifyBook(confirmationId string, startTime state.BookingTime, endTime state.BookingTime) string {
-	return fmt.Sprintf("MONITOR,BOOK,%s,%s,%s", confirmationId, formatBookingTime(startTime), formatBookingTime(endTime))
+func NotifyBook(facility, requestId, confirmationId string, startTime state.BookingTime, endTime state.BookingTime) string {
+	return fmt.Sprintf("MONITOR,BOOK,%s,%s,%s,%s,%s", facility, requestId, confirmationId, formatBookingTime(startTime), formatBookingTime(endTime))
 }
 
 func NotifyOffset(confirmationId string, offsetTime state.BookingTime) string {
