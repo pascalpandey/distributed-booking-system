@@ -56,7 +56,7 @@ func (handler *Handler) HandleMessage(message string) (bool) {
 		observers, confirmationId, err := handler.State.Book(facility, startTime, endTime)
 
 		if err == nil {
-			notification := serializer.NotifyBook(confirmationId, startTime, endTime)
+			notification := serializer.NotifyBook(facility, requestId, confirmationId, startTime, endTime)
 			observers.Notify(notification)
 		}
 
