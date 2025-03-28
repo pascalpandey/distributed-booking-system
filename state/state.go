@@ -9,8 +9,9 @@ import (
 	"github.com/google/uuid"
 )
 
-type State map[Facility]*FacilityState
+type State map[Facility]*FacilityState // Map of facility -> Facility's observers and bookings
 
+// Initializes the state with predefined facility names
 func InitState() State {
 	state := State{}
 	for _, roomType := range []string{"TR", "LAB", "THEATRE"} {
@@ -25,6 +26,7 @@ func InitState() State {
 	return state
 }
 
+// Checks if a facility is available for a given time range
 func (state *State) QueryAvailability(facility Facility, startTime BookingTime, endTime BookingTime) (bool, error) {
 	facilityState, found := (*state)[facility]
 	if !found {
@@ -33,6 +35,7 @@ func (state *State) QueryAvailability(facility Facility, startTime BookingTime, 
 	return facilityState.QueryAvailability(startTime, endTime), nil
 }
 
+// Attempts to make a booking for a facility and returns observers and a confirmation ID
 func (state *State) Book(facility Facility, startTime BookingTime, endTime BookingTime) (Observers, string, error) {
 	facilityState, found := (*state)[facility]
 	if !found {
@@ -46,6 +49,7 @@ func (state *State) Book(facility Facility, startTime BookingTime, endTime Booki
 	return facilityState.Observers, confirmationId, nil
 }
 
+// Shifts a booking's start and end times by the given offset if possible
 func (state *State) OffsetBooking(confirmationId string, offsetTime BookingTime) (Observers, error) {
 	facilityState, booking := state.getBooking(confirmationId)
 	if booking == nil {
@@ -68,6 +72,7 @@ func (state *State) OffsetBooking(confirmationId string, offsetTime BookingTime)
 	return facilityState.Observers, nil
 }
 
+// Extends the booking's end time if there is availability
 func (state *State) ExtendBooking(confirmationId string, extendTime BookingTime) (Observers, error) {
 	facilityState, booking := state.getBooking(confirmationId)
 	if booking == nil {
@@ -84,6 +89,7 @@ func (state *State) ExtendBooking(confirmationId string, extendTime BookingTime)
 	return facilityState.Observers, nil
 }
 
+// Removes a booking and notifies observers
 func (state *State) CancelBooking(confirmationId string) (Observers, bool) {
 	facilityState, booking := state.getBooking(confirmationId)
 	if booking == nil {
@@ -93,6 +99,7 @@ func (state *State) CancelBooking(confirmationId string) (Observers, bool) {
 	return facilityState.Observers, false
 }
 
+// Registers a client to observe changes to a facility's bookings for a duration
 func (state *State) Monitor(client *client.Client, facility Facility, monitorDuration time.Duration) error {
 	facilityState, found := (*state)[facility]
 	if !found {
@@ -102,6 +109,7 @@ func (state *State) Monitor(client *client.Client, facility Facility, monitorDur
 	return nil
 }
 
+// Searches for a booking by its confirmation ID and returns the facility state and booking
 func (state State) getBooking(confirmationId string) (*FacilityState, *Booking) {
 	for facility, facilityState := range state {
 		for _, booking := range facilityState.Bookings {

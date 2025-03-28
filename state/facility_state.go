@@ -10,10 +10,11 @@ import (
 type Facility = string
 
 type FacilityState struct {
-	Bookings  []*Booking
-	Observers Observers
+	Bookings  []*Booking  // Stores all bookings for the facility
+	Observers Observers   // Tracks registered observers for the facility
 }
 
+// Checks if the given time range is available for booking
 func (facilityState *FacilityState) QueryAvailability(startTime BookingTime, endTime BookingTime) bool {
 	bookings := facilityState.Bookings
 	for _, booking := range bookings {
@@ -24,6 +25,7 @@ func (facilityState *FacilityState) QueryAvailability(startTime BookingTime, end
 	return true
 }
 
+// Creates a new booking for the given time range and returns a confirmation ID
 func (facilityState *FacilityState) Book(startTime BookingTime, endTime BookingTime) string {
 	confirmationId := "CONF-" + uuid.New().String()
 	newBooking := Booking{
@@ -35,6 +37,7 @@ func (facilityState *FacilityState) Book(startTime BookingTime, endTime BookingT
 	return confirmationId
 }
 
+// Cancels a booking by confirmation ID and removes it from the list
 func (facilityState *FacilityState) Cancel(confirmationId string) *Booking {
 	for i, booking := range facilityState.Bookings {
 		if booking.ConfirmationId == confirmationId {
@@ -44,6 +47,7 @@ func (facilityState *FacilityState) Cancel(confirmationId string) *Booking {
 	return nil
 }
 
+// Registers an observer client for a specific duration before being removed automatically
 func (facilityState *FacilityState) RegisterObserver(client *client.Client, duration time.Duration) {
 	observerId := uuid.New()
 	facilityState.Observers[observerId] = client
@@ -53,6 +57,7 @@ func (facilityState *FacilityState) RegisterObserver(client *client.Client, dura
 	}()
 }
 
+// Sends a message to all registered observers
 func (facilityState *FacilityState) NotifyObservers(message string) {
 	for _, observer := range facilityState.Observers {
 		observer.SendMessage(message)

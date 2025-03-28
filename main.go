@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 
 	"sc4051-server/client"
@@ -12,9 +13,10 @@ import (
 )
 
 func main() {
+	// Parse flags and init state, cache, and handler
 	useCache := flag.Bool("cache", false, "Enable caching")
 	useDrop := flag.Bool("drop", false, "Drop every other packet")
-	port := flag.Int("port", 8080, "UDP server port")
+	port := flag.Int("port", 9000, "UDP server port")
 	flag.Parse()
 
 	conn := server.InitUDPServer(*port)
@@ -29,38 +31,45 @@ func main() {
 		cache = map[string]string{}
 	}
 
+	handler := handler.Handler{
+		State: &state,
+		Cache: cache,
+	}
+
+	// Used in useDrop=true to indicate whether a packet should be dropped or not
+	drop := true
+
 	for {
+		// Get raw bytes message from client and convert to string
 		buffer := make([]byte, 1024)
 		n, clientAddr, err := conn.ReadFromUDP(buffer)
 		if err != nil {
 			log.Printf("Error reading from UDP: %s", err)
 			continue
 		}
-
 		message := string(buffer[:n])
-		drop := true
+
+		// If useDrop=true, drop every other packet
 		if *useDrop {
 			if drop {
 				drop = false
-				log.Printf("Dropped %s from %s", clientAddr, message)
+				log.Printf("Dropped %s from %s \n\n", message, clientAddr)
 				continue
 			} else {
 				drop = true
 			}
 		}
 		log.Printf("Received from %s: %s", clientAddr, message)
-
-		handler := handler.Handler{
-			State: &state,
-			CallingClient: &client.Client{
-				Conn: conn,
-				Addr: clientAddr,
-			},
-			Cache: cache,
-		}
-		handler.HandleMessage(message)
 		
-		log.Println("State now:")
+		// Handle message based on calling client address
+		handler.CallingClient = &client.Client{Conn: conn, Addr: clientAddr}
+		cached := handler.HandleMessage(message)
+		if cached {
+			log.Printf("Message has been cached, resent previous reply \n\n")
+			continue
+		}
+		
+		log.Printf("State now:")
         for key, facilityState := range state {
 			if len(facilityState.Bookings) > 0 {
 				log.Printf("📅 %s BOOKINGS:", key)
@@ -91,5 +100,6 @@ func main() {
 				}
 			}
 		}
+		fmt.Printf("\n")
 	}
 }

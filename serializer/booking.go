@@ -6,6 +6,7 @@ import (
 	"sc4051-server/state"
 )
 
+// Converts a day enum to its string representation
 func DayToString(day state.Day) string {
 	switch day {
 	case state.Monday:
@@ -27,6 +28,7 @@ func DayToString(day state.Day) string {
 	}
 }
 
+// Formats booking time as a string
 func formatBookingTime(bookingTime state.BookingTime) string {
 	if bookingTime.Day == 0 {
 		return fmt.Sprintf("%d/%d", bookingTime.Hour, bookingTime.Minute)

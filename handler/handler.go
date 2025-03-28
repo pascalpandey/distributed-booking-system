@@ -8,27 +8,34 @@ import (
 )
 
 const (
-	QueryAvailability   = "QUERY"
-	Book                = "BOOK"
-	OffsetBooking       = "OFFSET"
-	MonitorAvailability = "MONITOR"
-	ExtendBooking       = "EXTEND"
-	CancelBooking       = "CANCEL"
+	QueryAvailability   = "QUERY"    // Checking availability of a facility
+	Book                = "BOOK"     // Booking a facility
+	OffsetBooking       = "OFFSET"   // Offsetting the start time of a booking
+	MonitorAvailability = "MONITOR"  // Register observer to monitor facility state
+	ExtendBooking       = "EXTEND"   // Extending the end time of a booking
+	CancelBooking       = "CANCEL"   // Cancelling a booking
 )
 
 type Handler struct {
-	State         *state.State
-	CallingClient *client.Client
-	Cache         map[string]string
+	State         *state.State        // Reference to the current state of the server
+	CallingClient *client.Client      // The client that initiated the request
+	Cache         map[string]string   // Cache for storing responses to avoid redundant processing
 }
 
-func (handler *Handler) HandleMessage(message string) {
+// Handles incoming messages based on the type of operation in the message.
+// First the initial message is deserialized to its requestId, operation, and main body.
+// If useCache=true, requestId is checked and if it has been cached, immediately return true and resend the previous response.
+// Otherwise, the handler follows a general process of deserializing the main body, handling the operation, for certain
+// operations, notify observers monitoring the facility, serialize the response, and if useCache=true save the response
+// to the cache before sending it back to the calling client and return false to indicate this message isn't handled by the cache.
+func (handler *Handler) HandleMessage(message string) (bool) {
 	requestId, operation, body := deserializer.Message(message)
 
 	if handler.Cache != nil {
 		reply, requestHandled := handler.Cache[requestId]
 		if requestHandled {
 			handler.CallingClient.SendMessage(reply)
+			return true
 		}
 	}
 
@@ -123,4 +130,6 @@ func (handler *Handler) HandleMessage(message string) {
 
 		handler.CallingClient.SendMessage(reply)
 	}
+
+	return false
 }

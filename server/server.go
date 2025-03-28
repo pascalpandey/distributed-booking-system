@@ -6,6 +6,7 @@ import (
 	"net"
 )
 
+// Initializes the UDP server on the given port
 func InitUDPServer(port int) *net.UDPConn {
 	addr := fmt.Sprintf(":%d", port)
 	udpAddr, err := net.ResolveUDPAddr("udp", addr)
@@ -20,7 +21,7 @@ func InitUDPServer(port int) *net.UDPConn {
 		return nil
 	}
 
-	log.Printf("UDP server listening on %s", addr)
+	log.Printf("UDP server listening on %s \n\n", addr)
 
 	return conn
 }

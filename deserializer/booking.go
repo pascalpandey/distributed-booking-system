@@ -7,6 +7,7 @@ import (
 	"sc4051-server/state"
 )
 
+// Deserializes a string representing the day of the week to the corresponding Day enum
 func stringToDay(dayStr string) state.Day {
 	switch strings.ToLower(dayStr) {
 	case "monday":
@@ -28,6 +29,7 @@ func stringToDay(dayStr string) state.Day {
 	}
 }
 
+// Deserializes a string in the format "Day/Hour/Minute" or "Hour/Minute" to a booking time type
 func deserializeBookingTime(str string) state.BookingTime {
 	lst := strings.Split(str, "/")
 	if len(lst) == 3 {
