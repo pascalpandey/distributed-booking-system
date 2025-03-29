@@ -16,7 +16,7 @@ func TestReplyQueryAvailability(t *testing.T) {
 			requestId: "12345",
 			available: true,
 			err:       nil,
-			expected:  "12345,SUCCSESS",
+			expected:  "12345,SUCCESS",
 		},
 		{
 			requestId: "12345",

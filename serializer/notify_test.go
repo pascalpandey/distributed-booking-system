@@ -6,15 +6,17 @@ import (
 )
 
 func TestNotifyBook(t *testing.T) {
+	facility := "TR1"
+	requestId := "12345"
 	confirmationId := "12345"
 	startTime := state.BookingTime{Hour: 14, Minute: 30}
 	endTime := state.BookingTime{Hour: 15, Minute: 30}
 
-	expected := "MONITOR,BOOK,12345,14/30,15/30"
-	result := NotifyBook(confirmationId, startTime, endTime)
+	expected := "MONITOR,BOOK,TR1,12345,12345,14/30,15/30"
+	result := NotifyBook(facility, requestId, confirmationId, startTime, endTime)
 
 	if result != expected {
-		t.Errorf("For params %s, %+v, %+v, expected %v, but got %v", confirmationId, startTime, endTime, expected, result)
+		t.Errorf("For params %s, %s, %s, %+v, %+v, expected %v, but got %v", facility, requestId, confirmationId, startTime, endTime, expected, result)
 	}
 }
 
