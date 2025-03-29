@@ -21,7 +21,22 @@ func InitUDPServer(port int) *net.UDPConn {
 		return nil
 	}
 
-	log.Printf("UDP server listening on %s \n\n", addr)
-
 	return conn
+}
+
+// Initializes a UDP client for to send messages to other servers,
+// this opens a socket on a random port on the server
+func InitUDPClient(destAddrStr string) (*net.UDPConn, *net.UDPAddr) {
+	destAddr, err := net.ResolveUDPAddr("udp", destAddrStr)
+	if err != nil {
+		log.Fatal("Error resolving address:", err)
+	}
+
+	conn, err := net.DialUDP("udp", nil, destAddr)
+	if err != nil {
+		log.Printf("Error starting UDP server: %s", err)
+		return nil, nil
+	}
+
+	return conn, destAddr
 }

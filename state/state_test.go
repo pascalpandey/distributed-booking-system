@@ -90,6 +90,6 @@ func TestMonitorState(t *testing.T) {
 
 // Example of a valid confirmationId is CONF-24d2e00c-fada-4e01-84fc-f9ca134ac62c
 func IsValidConfirmationId(u string) bool {
-	_, err := uuid.Parse(u[5:])
+	_, err := uuid.Parse(u[9:])
 	return err == nil
 }

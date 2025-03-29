@@ -2,6 +2,7 @@ package state
 
 import (
 	"time"
+	"fmt"
 
 	"sc4051-server/client"
 	"github.com/google/uuid"
@@ -26,8 +27,8 @@ func (facilityState *FacilityState) QueryAvailability(startTime BookingTime, end
 }
 
 // Creates a new booking for the given time range and returns a confirmation ID
-func (facilityState *FacilityState) Book(startTime BookingTime, endTime BookingTime) string {
-	confirmationId := "CONF-" + uuid.New().String()
+func (facilityState *FacilityState) Book(facility Facility, startTime BookingTime, endTime BookingTime) string {
+	confirmationId := fmt.Sprintf("CONF-%s-%s", facility, uuid.New().String())
 	newBooking := Booking{
 		StartTime:      startTime,
 		EndTime:        endTime,

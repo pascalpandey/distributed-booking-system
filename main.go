@@ -12,17 +12,21 @@ import (
 	"sc4051-server/state"
 )
 
+var (
+	useCache = flag.Bool("cache", false, "Enable caching")
+	useDrop = flag.Bool("drop", false, "Drop every other packet")
+	port = flag.Int("port", 9000, "UDP server port")
+)
+
 func main() {
 	// Parse flags and init state, cache, and handler
-	useCache := flag.Bool("cache", false, "Enable caching")
-	useDrop := flag.Bool("drop", false, "Drop every other packet")
-	port := flag.Int("port", 9000, "UDP server port")
 	flag.Parse()
 
 	conn := server.InitUDPServer(*port)
 	if conn == nil {
 		return
 	}
+	log.Printf("Handler UDP server listening on %d \n\n", *port)
 
 	state := state.InitState()
 

@@ -31,17 +31,18 @@ func TestQueryAvailabilityFacilityState(t *testing.T) {
 func TestBookFacilityState(t *testing.T) {
 	facilityState := &FacilityState{}
 
+	facility := "TR1"
 	startTime := BookingTime{Day: Monday, Hour: 9, Minute: 0}
 	endTime := BookingTime{Day: Monday, Hour: 10, Minute: 0}
 
-	confirmationId := facilityState.Book(startTime, endTime)
+	confirmationId := facilityState.Book(facility, startTime, endTime)
 
 	if len(facilityState.Bookings) != 1 {
-		t.Errorf("For params %+v, %+v, expected 1 booking, but got %v", startTime, endTime, len(facilityState.Bookings))
+		t.Errorf("For params %s, %+v, %+v, expected 1 booking, but got %v", facility, startTime, endTime, len(facilityState.Bookings))
 	}
 
 	if facilityState.Bookings[0].ConfirmationId != confirmationId {
-		t.Errorf("For params %+v, %+v, expected confirmationId %v, but got %v", startTime, endTime, confirmationId, facilityState.Bookings[0].ConfirmationId)
+		t.Errorf("For params %s, %+v, %+v, expected confirmationId %v, but got %v", facility, startTime, endTime, confirmationId, facilityState.Bookings[0].ConfirmationId)
 	}
 }
 

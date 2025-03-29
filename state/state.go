@@ -45,7 +45,7 @@ func (state *State) Book(facility Facility, startTime BookingTime, endTime Booki
 		return nil, "", fmt.Errorf("facility %v already booked for that period", facility)
 	}
 
-	confirmationId := facilityState.Book(startTime, endTime)
+	confirmationId := facilityState.Book(facility, startTime, endTime)
 	return facilityState.Observers, confirmationId, nil
 }
 
