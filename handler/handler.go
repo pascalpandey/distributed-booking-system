@@ -31,7 +31,7 @@ type Handler struct {
 // If useCache=true, requestId is checked and if it has been cached, immediately return true and resend the previous response.
 // Otherwise, the handler follows a general process of deserializing the main body, handling the operation, for certain
 // operations, notify observers monitoring the facility, serialize the response, and if useCache=true save the response
-// to the cache before sending it back to the calling client.
+// to the cache before sending it back to the calling client. If drop reply is true, don't send reply back to client.
 func (handler *Handler) HandleMessage(message string, dropReply bool) {
 	requestId, operation, body := deserializer.Message(message)
 

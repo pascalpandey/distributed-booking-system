@@ -8,6 +8,7 @@ import (
 	"sc4051-server/client"
 )
 
+// Check address for filtering of clusterNodes flag
 func areSameAddr(a, b *net.UDPAddr) bool {
 	// Treat "::" as "127.0.0.1" for demo purposes
 	if (((a.IP.String() == "::" && b.IP.String() == "127.0.0.1") || 
@@ -18,6 +19,7 @@ func areSameAddr(a, b *net.UDPAddr) bool {
 	return false
 }
 
+// Filtering of clusterNodes flag
 func ExtractClusterServers(str string, conn *net.UDPConn) []*client.Client {
 	arr := strings.Split(str, ",")
 	res := []*client.Client{}
@@ -35,6 +37,7 @@ func ExtractClusterServers(str string, conn *net.UDPConn) []*client.Client {
 	return res
 }
 
+// Check if message is a cluster message
 func ExtractClusterMsg(str string) (bool, string) {
 	substrs := []string{RequestVote, Vote, AcknowledgeState, State, Heartbeat}
 	for _, substr := range substrs {

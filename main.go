@@ -78,8 +78,6 @@ func main() {
 		message := string(buffer[:n])
 		callingClient := &client.Client{Conn: conn, Addr: clientAddr}
 
-		log.Printf("Received from %s: %s", clientAddr, message)
-
 		// Append cluster messages and skip handling if not leader
 		if *clusterNodes != "" {
 			if isClusterMsg, opcode := cluster.ExtractClusterMsg(message); isClusterMsg {
@@ -95,6 +93,8 @@ func main() {
 				continue
 			}
 		}
+
+		log.Printf("Received from %s: %s", clientAddr, message)
 
 		// If useDrop=true, drop every other packet
 		if *useDrop {

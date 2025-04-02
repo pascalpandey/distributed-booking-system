@@ -7,6 +7,7 @@ import (
 	"sync/atomic"
 )
 
+// Handle state updates in replication process
 func (clusterState *ClusterState) handleState(message ClusterMessage) {
 	switch clusterState.ServerState {
 	case Leader:
@@ -42,6 +43,7 @@ func (clusterState *ClusterState) handleState(message ClusterMessage) {
 	}
 }
 
+// Increment counter of state acknowledgements
 func (clusterState *ClusterState) handleAckState() {
 	switch clusterState.ServerState {
 	case Leader:
@@ -53,11 +55,13 @@ func (clusterState *ClusterState) handleAckState() {
 	}
 }
 
+// Update timeout after heartbeat
 func (clusterState *ClusterState) handleHeartbeat(message ClusterMessage) {
 	clusterState.LeaderAddr = message.CallingClient.Addr.String()
 	clusterState.TimeoutReached = false
 }
 
+// Perform checks if a vote request should be given a vote
 func (clusterState *ClusterState) handleReqVote(message ClusterMessage) {
 	arr := strings.Split(message.Message, ",")
 	term, _ := strconv.Atoi(arr[1])
@@ -86,6 +90,7 @@ func (clusterState *ClusterState) handleReqVote(message ClusterMessage) {
 	}
 }
 
+// Update vote count if receive vote
 func (clusterState *ClusterState) handleVote() {
 	switch clusterState.ServerState {
 	case Leader:
@@ -103,6 +108,7 @@ func (clusterState *ClusterState) handleVote() {
 	}
 }
 
+// Main loop to handle cluster requests
 func (clusterState *ClusterState) handleMessage() {
 	for message := range clusterState.MessageQueue {
 		switch message.Opcode {

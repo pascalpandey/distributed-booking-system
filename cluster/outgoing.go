@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+// Send heartbeats periodically if a leader
 func (clusterState *ClusterState) sendHeartbeats() {
 	for {
 		if clusterState.ServerState != Leader {
@@ -19,11 +20,13 @@ func (clusterState *ClusterState) sendHeartbeats() {
 	}
 }
 
+// Revert state incase of send state failure
 func (clusterState *ClusterState) revertState(backup string) {
 	_, dataState := clusterState.deserializeState(backup)
 	clusterState.DataState = dataState
 }
 
+// Send state to followers for replication
 func (clusterState *ClusterState) SendState(backup string) bool {
 	clusterState.ReplicationLock.Lock()
 	clusterState.DataState.Id += 1
@@ -64,6 +67,7 @@ func (clusterState *ClusterState) SendState(backup string) bool {
 	return true
 }
 
+// Start election process after timeout
 func (clusterState *ClusterState) startElection() {
 	clusterState.CurrentTerm += 1
 	log.Printf("Starting election with term %d", clusterState.CurrentTerm)

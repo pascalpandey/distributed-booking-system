@@ -18,18 +18,18 @@ import (
 )
 
 type ClusterState struct {
-	ClusterClients   []*client.Client
-	DataState        DataState
-	PendingDataState DataState
-	ServerState      ServerState
-	MessageQueue     chan ClusterMessage
-	TimeoutReached   bool
-	CurrentTerm      int32
-	HasVoted         bool
-	VoteCount        int32
-	LeaderAddr       string
-	StateAckCount    int32
-	ReplicationLock  sync.Mutex
+	ClusterClients   []*client.Client    // Address of other nodes in the cluster
+	DataState        DataState           // State of bookings
+	PendingDataState DataState           // Buffered state during 2 phase replication
+	ServerState      ServerState         // State of node (Follower, Candidate, or Leader)
+	MessageQueue     chan ClusterMessage // Queue of cluster messages
+	TimeoutReached   bool                // Election timeout reached
+	CurrentTerm      int32               // Current term of the node
+	HasVoted         bool                // Whether the node has cast ts vote for the term
+	VoteCount        int32               // Count of votes received during election
+	LeaderAddr       string              // Address of leader to redirect requests to
+	StateAckCount    int32               // Count of state acknowledgements during replication
+	ReplicationLock  sync.Mutex          // Mutex to ensure only one replication happens at any time
 }
 
 type DataState struct {
@@ -52,16 +52,17 @@ type ClusterMessage struct {
 }
 
 const (
-	Vote              = "VOTE"
-	RequestVote       = "REQVOTE"
-	State             = "STATE"
-	AcknowledgeState  = "ACKSTATE"
-	Heartbeat         = "HEARTBEAT"
-	ElectionDuration  = 7000 * time.Millisecond
-	HeartbeatInterval = 500 * time.Millisecond
-	StateInterval     = 200 * time.Millisecond
+	Vote              = "VOTE"                  // Cast vote for a candidate
+	RequestVote       = "REQVOTE"               // Request votes from other nodes
+	State             = "STATE"                 // Send state for replication
+	AcknowledgeState  = "ACKSTATE"              // Acknowledge state during replication
+	Heartbeat         = "HEARTBEAT"             // Heratbeats from leader to stop election tiemout
+	ElectionDuration  = 7000 * time.Millisecond // Duration of election
+	HeartbeatInterval = 500 * time.Millisecond  // How often heartbeat is sent
+	StateInterval     = 200 * time.Millisecond  // How long to wait for state acknowledgements
 )
 
+// Starts the cluster state and initiates election if timeout is reached
 func (clusterState *ClusterState) Start() {
 	clusterState.loadState()
 	go clusterState.handleMessage()
@@ -74,6 +75,7 @@ func (clusterState *ClusterState) Start() {
 	}
 }
 
+// Serializes the current data state into a JSON string along with the current term
 func (clusterState *ClusterState) SerializeState() string {
 	encodedData, err := json.Marshal(clusterState.DataState)
 	if err != nil {
@@ -87,6 +89,7 @@ func (clusterState *ClusterState) SerializeState() string {
 	return serialized
 }
 
+// Deserializes the given string into a term and data state
 func (clusterState *ClusterState) deserializeState(str string) (int, DataState) {
 	arr := strings.Split(str, "|")
 	term, err := strconv.Atoi(arr[1])
@@ -104,6 +107,7 @@ func (clusterState *ClusterState) deserializeState(str string) (int, DataState) 
 	return term, decoded
 }
 
+// Loads the last committed state from disk
 func (clusterState *ClusterState) loadState() {
 	addr := clusterState.ClusterClients[0].Conn.LocalAddr().(*net.UDPAddr)
 	filename := fmt.Sprintf("states/server_%d", addr.Port)
@@ -119,6 +123,7 @@ func (clusterState *ClusterState) loadState() {
 	log.Printf("Loaded state with term %d and log id %d", term, dataState.Id)
 }
 
+// Saves the current data state and term to disk
 func (clusterState *ClusterState) saveStateToDisk() {
 	serialized := clusterState.SerializeState()
 	addr := clusterState.ClusterClients[0].Conn.LocalAddr().(*net.UDPAddr)
@@ -129,6 +134,7 @@ func (clusterState *ClusterState) saveStateToDisk() {
 	}
 }
 
+// Logs the current data state including bookings and observers
 func (clusterState *ClusterState) logDataState() {
 	log.Printf("State now with log id %d:", clusterState.DataState.Id)
 	for key, facilityState := range clusterState.DataState.State {
