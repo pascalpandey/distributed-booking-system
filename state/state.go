@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"sc4051-server/client"
-	"github.com/google/uuid"
 )
 
 type State map[Facility]*FacilityState // Map of facility -> Facility's observers and bookings
@@ -19,7 +18,7 @@ func InitState() State {
 			facilityName := roomType + strconv.Itoa(i)
 			state[facilityName] = &FacilityState{
 				Bookings:  []*Booking{},
-				Observers: map[uuid.UUID]*client.Client{},
+				Observers: map[string]*client.Client{},
 			}
 		}
 	}

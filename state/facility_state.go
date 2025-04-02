@@ -50,7 +50,7 @@ func (facilityState *FacilityState) Cancel(confirmationId string) *Booking {
 
 // Registers an observer client for a specific duration before being removed automatically
 func (facilityState *FacilityState) RegisterObserver(client *client.Client, duration time.Duration) {
-	observerId := uuid.New()
+	observerId := fmt.Sprintf("%s-%s", uuid.New().String(), duration)
 	facilityState.Observers[observerId] = client
 	go func() {
 		time.Sleep(duration)

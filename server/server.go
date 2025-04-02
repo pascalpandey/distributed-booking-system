@@ -32,9 +32,14 @@ func InitUDPClient(destAddrStr string) (*net.UDPConn, *net.UDPAddr) {
 		log.Fatal("Error resolving address:", err)
 	}
 
-	conn, err := net.DialUDP("udp", nil, destAddr)
+	sourceAddr, err := net.ResolveUDPAddr("udp", ":0")
 	if err != nil {
-		log.Printf("Error starting UDP server: %s", err)
+		log.Fatal("Error resolving address:", err)
+	}
+
+	conn, err := net.ListenUDP("udp", sourceAddr)
+	if err != nil {
+		log.Printf("Error starting UDP client: %s", err)
 		return nil, nil
 	}
 

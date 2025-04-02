@@ -13,16 +13,9 @@ type Client struct {
 
 // Sends a message to the client's address via UDP
 func (client *Client) SendMessage(message string) {
-	if client.Conn.RemoteAddr() != nil {
-		_, err := client.Conn.Write([]byte(message))
-		if err != nil {
-			log.Printf("Failed to send message: %+v", err)
-		}
-	} else {
-		_, err := client.Conn.WriteToUDP([]byte(message), client.Addr)
-		if err != nil {
-			log.Printf("Failed to send message: %+v", err)
-		}
+	_, err := client.Conn.WriteToUDP([]byte(message), client.Addr)
+	if err != nil {
+		log.Printf("Failed to send message: %+v", err)
 	}
 }
 

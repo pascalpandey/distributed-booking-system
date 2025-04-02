@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"strings"
 	"time"
 
 	"sc4051-server/client"
@@ -68,17 +69,25 @@ func main() {
 			facilityType = extractFacilityType(confirmationId)
 
 		}
+		
+		var	usedAddrs []string
+		trAddrs := strings.Split(*trAddr, ",")
+		labAddrs := strings.Split(*labAddr, ",")
+		theatreAddrs := strings.Split(*theatreAddr, ",")
 
 		// Create a client to forward message to respective handler server
 		var routerConn *net.UDPConn
 		var handlerServerAddr *net.UDPAddr
 		switch facilityType {
 		case TR:
-			routerConn, handlerServerAddr = server.InitUDPClient(*trAddr)
+			routerConn, handlerServerAddr = server.InitUDPClient(trAddrs[0])
+			usedAddrs = trAddrs
 		case Lab:
-			routerConn, handlerServerAddr = server.InitUDPClient(*labAddr)
+			routerConn, handlerServerAddr = server.InitUDPClient(labAddrs[0])
+			usedAddrs = labAddrs
 		case Theatre:
-			routerConn, handlerServerAddr = server.InitUDPClient(*theatreAddr)
+			routerConn, handlerServerAddr = server.InitUDPClient(theatreAddrs[0])
+			usedAddrs = theatreAddrs
 		}
 		routerClient := &client.Client{Conn: routerConn, Addr: handlerServerAddr}
 		log.Printf("Forwarding to: %s", handlerServerAddr)
@@ -86,9 +95,9 @@ func main() {
 		// Handle forwarding of monitor and non monitor operations
 		callingClient := &client.Client{Conn: conn, Addr: clientAddr}
 		if monitorDuration != nil {
-			forwardMonitorMessage(callingClient, routerClient, message, *monitorDuration)
+			forwardMonitorMessage(callingClient, routerClient, usedAddrs, message, *monitorDuration)
 		} else {
-			forwardMessage(callingClient, routerClient, message)
+			forwardMessage(callingClient, routerClient, usedAddrs, message)
 		}
 
 		fmt.Printf("\n")
