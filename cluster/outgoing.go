@@ -40,27 +40,20 @@ func (clusterState *ClusterState) SendState(backup string) bool {
 	majority := int32((len(clusterState.ClusterClients)+1)/2 + 1)
 	if atomic.LoadInt32(&clusterState.StateAckCount) < majority {
 		log.Printf("Only received %d acks, not enough for commit stage", clusterState.StateAckCount)
+		clusterState.revertState(backup)
 		clusterState.ReplicationLock.Unlock()
 		return false
 	}
 
 	log.Printf("Replication acknowledged with %d acks, starting commit...", clusterState.StateAckCount)
 
+	clusterState.saveStateToDisk()
+
 	clusterState.StateAckCount = 1
 	for _, client := range clusterState.ClusterClients {
 		client.SendMessage(clusterState.SerializeState())
 	}
 
-	time.Sleep(StateInterval)
-
-	if atomic.LoadInt32(&clusterState.StateAckCount) < majority {
-		log.Printf("Only received %d acks, not enough for commit stage", clusterState.StateAckCount)
-		clusterState.revertState(backup)
-		clusterState.ReplicationLock.Unlock()
-		return false
-	}
-
-	clusterState.saveStateToDisk()
 	log.Println("Committed")
 
 	clusterState.ReplicationLock.Unlock()
