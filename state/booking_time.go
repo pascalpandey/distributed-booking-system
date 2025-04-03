@@ -23,38 +23,33 @@ func (bookingTime *BookingTime) ToMinute() int {
 	return bookingTime.Day*24*60 + bookingTime.Hour*60 + bookingTime.Minute
 }
 
-// Adds the given duration to the current booking time, addTime is positive
-func (bookingTime BookingTime) Add(addTime BookingTime) BookingTime {
-	bookingTime.Day += addTime.Day
-	bookingTime.Hour += addTime.Hour
-	if bookingTime.Hour >= 24 {
-		bookingTime.Hour %= 24
-		bookingTime.Day += 1
+// Converts minutes to booking time
+func fromMinute(totalMinutes int) BookingTime {
+	totalMinutes = mod(totalMinutes, 7*24*60)
+	
+	day := totalMinutes / (24 * 60)
+	totalMinutes %= (24 * 60)
+	
+	hour := totalMinutes / 60
+	minute := totalMinutes % 60
+	
+	return BookingTime{
+	  	Day:    day,
+	  	Hour:   hour,
+	  	Minute: minute,
 	}
-	bookingTime.Day = mod(bookingTime.Day, 7)
-	bookingTime.Minute += addTime.Minute
-	if bookingTime.Minute >= 60 {
-		bookingTime.Minute %= 60
-		bookingTime.Hour += 1
-	}
-	return bookingTime
 }
-
-// Subtracts the given duration from the current booking time, subtractTime is negative
+  
+// Adds the given duration to the current booking time
+func (bookingTime BookingTime) Add(addTime BookingTime) BookingTime {
+	totalMinutes := bookingTime.ToMinute() + addTime.ToMinute()
+	return fromMinute(totalMinutes)
+}
+  
+// Subtracts the given duration from the current booking time
 func (bookingTime BookingTime) Subtract(subtractTime BookingTime) BookingTime {
-	bookingTime.Day += subtractTime.Day
-	bookingTime.Hour += subtractTime.Hour
-	if bookingTime.Hour < 0 {
-		bookingTime.Hour += 24
-		bookingTime.Day -= 1
-	}
-	bookingTime.Day = mod(bookingTime.Day, 7)
-	bookingTime.Minute += subtractTime.Minute
-	if bookingTime.Minute < 0 {
-		bookingTime.Minute += 60
-		bookingTime.Hour -= 1
-	}
-	return bookingTime
+	totalMinutes := bookingTime.ToMinute() - subtractTime.ToMinute()
+	return fromMinute(totalMinutes)
 }
 
 // % function that wraps around negative integers to positive
