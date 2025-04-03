@@ -15,10 +15,13 @@ type FacilityState struct {
 	Observers Observers   // Tracks registered observers for the facility
 }
 
-// Checks if the given time range is available for booking
-func (facilityState *FacilityState) QueryAvailability(startTime BookingTime, endTime BookingTime) bool {
+// Checks if the given time range is available for booking, ignoring confirmationId passed to ignoredConfId
+func (facilityState *FacilityState) QueryAvailability(startTime BookingTime, endTime BookingTime, ignoredConfId string) bool {
 	bookings := facilityState.Bookings
 	for _, booking := range bookings {
+		if booking.ConfirmationId == ignoredConfId {
+			continue
+		}
 		if booking.intersects(startTime, endTime) {
 			return false
 		}

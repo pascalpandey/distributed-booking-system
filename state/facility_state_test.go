@@ -21,7 +21,7 @@ func TestQueryAvailabilityFacilityState(t *testing.T) {
 	endTime := BookingTime{Day: Monday, Hour: 10, Minute: 30}
 
 	expected := false
-	result := facilityState.QueryAvailability(startTime, endTime)
+	result := facilityState.QueryAvailability(startTime, endTime, "")
 
 	if result != expected {
 		t.Errorf("For params %+v, %+v, expected %v, but got %v", startTime, endTime, expected, result)
