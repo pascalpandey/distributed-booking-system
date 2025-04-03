@@ -48,7 +48,7 @@ func (bookingTime BookingTime) Add(addTime BookingTime) BookingTime {
   
 // Subtracts the given duration from the current booking time
 func (bookingTime BookingTime) Subtract(subtractTime BookingTime) BookingTime {
-	totalMinutes := bookingTime.ToMinute() - subtractTime.ToMinute()
+	totalMinutes := bookingTime.ToMinute() + subtractTime.ToMinute()
 	return fromMinute(totalMinutes)
 }
 
