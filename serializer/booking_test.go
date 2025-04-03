@@ -36,11 +36,11 @@ func TestFormatBookingTime(t *testing.T) {
 	}{
 		{
 			bookingTime:       state.BookingTime{Day: state.Monday, Hour: 9, Minute: 30},
-			expectedFormatted: "Monday/9/30",
+			expectedFormatted: "Monday 09:30",
 		},
 		{
 			bookingTime:       state.BookingTime{Day: state.Tuesday, Hour: 14, Minute: 45},
-			expectedFormatted: "Tuesday/14/45",
+			expectedFormatted: "Tuesday 14:45",
 		},
 	}
 

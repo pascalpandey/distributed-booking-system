@@ -10,7 +10,7 @@ func TestNotifyBook(t *testing.T) {
 	startTime := state.BookingTime{Hour: 14, Minute: 30}
 	endTime := state.BookingTime{Hour: 15, Minute: 30}
 
-	expected := "New booking with confirmation ID 12345 from Monday/14/30 to Monday/15/30"
+	expected := "New booking with Confirmation ID 12345 on Monday 14:30 - Monday 15:30."
 	result := NotifyBook(confirmationId, startTime, endTime)
 
 	if result != expected {
@@ -27,7 +27,7 @@ func TestNotifyOffset(t *testing.T) {
 		ConfirmationId: "12345",
 	}
 
-	expected := "Booking with confirmation ID 12345 was shifted by 10 hour(s) and 0 minute(s), new booking time is from Monday/9/0 to Monday/10/0"
+	expected := "Booking with Confirmation ID 12345 was shifted by 10 hour(s) and 0 minute(s). The new booking time is Monday 09:00 - Monday 10:00."
 	result := NotifyOffset(confirmationId, booking, offsetTime)
 
 	if result != expected {
@@ -44,7 +44,7 @@ func TestNotifyExtend(t *testing.T) {
 		ConfirmationId: "12345",
 	}
 
-	expected := "Booking with confirmation ID 12345 was extended by 16 hour(s) and 0 minute(s), new booking time is from Monday/9/0 to Monday/10/0"
+	expected := "Booking with Confirmation ID 12345 was extended by 16 hour(s) and 0 minute(s). The new booking time is Monday 09:00 - Monday 10:00."
 	result := NotifyExtend(confirmationId, booking, extendTime)
 
 	if result != expected {
@@ -55,7 +55,7 @@ func TestNotifyExtend(t *testing.T) {
 func TestNotifyCancel(t *testing.T) {
 	confirmationId := "12345"
 
-	expected := "Booking with confirmation ID 12345 was cancelled"
+	expected := "Booking with Confirmation ID 12345 was cancelled."
 	result := NotifyCancel(confirmationId)
 
 	if result != expected {

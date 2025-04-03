@@ -35,5 +35,5 @@ func formatReadableHourMinute(bookingTime state.BookingTime) string {
 
 // Formats booking time as a string with days
 func formatBookingTimeWithDay(bookingTime state.BookingTime) string {
-	return fmt.Sprintf("%s/%d/%d", DayToString(bookingTime.Day), bookingTime.Hour, bookingTime.Minute)
+	return fmt.Sprintf("%s %02d:%02d", DayToString(bookingTime.Day), bookingTime.Hour, bookingTime.Minute)
 }
