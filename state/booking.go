@@ -46,8 +46,13 @@ func (booking *Booking) intersects(startTime BookingTime, endTime BookingTime) b
 
 // Shifts the booking's start and end time by the given offset
 func (booking *Booking) Offset(offsetTime BookingTime) {
-	booking.StartTime = booking.StartTime.Add(offsetTime)
-	booking.EndTime = booking.EndTime.Add(offsetTime)
+    if offsetTime.ToMinute() > 0 {
+	    booking.StartTime = booking.StartTime.Add(offsetTime)
+	    booking.EndTime = booking.EndTime.Add(offsetTime)
+    } else {
+        booking.StartTime = booking.StartTime.Subtract(offsetTime)
+	    booking.EndTime = booking.EndTime.Subtract(offsetTime)
+    }
 }
 
 // Extends the booking's end time by the given duration

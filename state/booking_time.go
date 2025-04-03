@@ -9,7 +9,7 @@ type BookingTime struct {
 type Day = int
 
 const (
-	Monday Day = iota + 1 // Represents days as enum of ints starting from 1
+	Monday Day = iota // Represents days as enum of ints starting from 0
 	Tuesday
 	Wednesday
 	Thursday
@@ -20,7 +20,7 @@ const (
 
 // Converts the booking time into total minutes since the start of the week
 func (bookingTime *BookingTime) ToMinute() int {
-	return (bookingTime.Day-1)*24*60 + bookingTime.Hour*60 + bookingTime.Minute
+	return bookingTime.Day*24*60 + bookingTime.Hour*60 + bookingTime.Minute
 }
 
 // Adds the given duration to the current booking time, addTime is positive
@@ -31,6 +31,7 @@ func (bookingTime BookingTime) Add(addTime BookingTime) BookingTime {
 		bookingTime.Hour %= 24
 		bookingTime.Day += 1
 	}
+	bookingTime.Day = mod(bookingTime.Day, 7)
 	bookingTime.Minute += addTime.Minute
 	if bookingTime.Minute >= 60 {
 		bookingTime.Minute %= 60
@@ -47,10 +48,16 @@ func (bookingTime BookingTime) Subtract(subtractTime BookingTime) BookingTime {
 		bookingTime.Hour += 24
 		bookingTime.Day -= 1
 	}
+	bookingTime.Day = mod(bookingTime.Day, 7)
 	bookingTime.Minute += subtractTime.Minute
 	if bookingTime.Minute < 0 {
 		bookingTime.Minute += 60
 		bookingTime.Hour -= 1
 	}
 	return bookingTime
+}
+
+// % function that wraps around negative integers to positive
+func mod(a, b int) int {
+	return (a%b + b) % b
 }

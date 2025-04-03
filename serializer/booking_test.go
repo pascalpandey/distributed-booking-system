@@ -18,7 +18,7 @@ func TestDayToString(t *testing.T) {
 		{state.Friday, "Friday"},
 		{state.Saturday, "Saturday"},
 		{state.Sunday, "Sunday"},
-		{state.Day(0), "Invalid"},
+		{state.Day(-1), "Invalid"},
 	}
 
 	for _, test := range tests {
@@ -39,13 +39,13 @@ func TestFormatBookingTime(t *testing.T) {
 			expectedFormatted: "Monday/9/30",
 		},
 		{
-			bookingTime:       state.BookingTime{Hour: 14, Minute: 45},
-			expectedFormatted: "14/45",
+			bookingTime:       state.BookingTime{Day: state.Tuesday, Hour: 14, Minute: 45},
+			expectedFormatted: "Tuesday/14/45",
 		},
 	}
 
 	for _, test := range tests {
-		result := formatBookingTime(test.bookingTime)
+		result := formatBookingTimeWithDay(test.bookingTime)
 		if result != test.expectedFormatted {
 			t.Errorf("For bookingTime %+v, expected %v, but got %v", test.bookingTime, test.expectedFormatted, result)
 		}

@@ -18,7 +18,7 @@ func TestAdd(t *testing.T) {
 	bookingTime := BookingTime{Day: Monday, Hour: 9, Minute: 30}
 	addTime := BookingTime{Day: 1, Hour: 2, Minute: 45}
 
-	expected := BookingTime{Day: 2, Hour: 12, Minute: 15}
+	expected := BookingTime{Day: 1, Hour: 12, Minute: 15}
 	result := bookingTime.Add(addTime)
 
 	if result != expected {

@@ -28,10 +28,12 @@ func DayToString(day state.Day) string {
 	}
 }
 
-// Formats booking time as a string
-func formatBookingTime(bookingTime state.BookingTime) string {
-	if bookingTime.Day == 0 {
-		return fmt.Sprintf("%d/%d", bookingTime.Hour, bookingTime.Minute)
-	}
+// Formats booking time as a string without days
+func formatBookingTimeWithoutDay(bookingTime state.BookingTime) string {
+	return fmt.Sprintf("%d/%d", bookingTime.Hour, bookingTime.Minute)
+}
+
+// Formats booking time as a string with days
+func formatBookingTimeWithDay(bookingTime state.BookingTime) string {
 	return fmt.Sprintf("%s/%d/%d", DayToString(bookingTime.Day), bookingTime.Hour, bookingTime.Minute)
 }

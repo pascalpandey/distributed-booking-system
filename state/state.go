@@ -57,11 +57,33 @@ func (state *State) OffsetBooking(confirmationId string, offsetTime BookingTime)
 
 	var reqStart, reqEnd BookingTime
 	if offsetTime.ToMinute() > 0 {
-		reqStart = booking.EndTime.Add(BookingTime{Minute: 1})
+		reqStart = booking.StartTime.Add(offsetTime)
+		// normal case
+		if booking.StartTime.ToMinute() < booking.EndTime.ToMinute() {
+			if reqStart.ToMinute() < booking.EndTime.ToMinute() {
+				reqStart = booking.EndTime
+			}
+		// wrap around case
+		} else if booking.StartTime.ToMinute() > booking.EndTime.ToMinute() {
+			if reqStart.ToMinute() > booking.StartTime.ToMinute() || reqStart.ToMinute() < booking.EndTime.ToMinute() {
+				reqStart = booking.EndTime
+			}
+		}
 		reqEnd = booking.EndTime.Add(offsetTime)
 	} else {
 		reqStart = booking.StartTime.Subtract(offsetTime)
-		reqEnd = booking.StartTime.Subtract(BookingTime{Minute: 1})
+		reqEnd = booking.EndTime.Subtract(offsetTime)
+		// normal case
+		if booking.StartTime.ToMinute() < booking.EndTime.ToMinute() {
+			if reqEnd.ToMinute() > booking.StartTime.ToMinute() {
+				reqEnd = booking.StartTime
+			}
+		// wrap around case
+		} else if booking.StartTime.ToMinute() > booking.EndTime.ToMinute() {
+			if reqEnd.ToMinute() < booking.EndTime.ToMinute() || reqEnd.ToMinute() > booking.StartTime.ToMinute() {
+				reqEnd = booking.StartTime
+			}
+		}
 	}
 	if !facilityState.QueryAvailability(reqStart, reqEnd) {
 		return nil, fmt.Errorf("cannot offset booking with confirmationId %v as there are conflicts", confirmationId)
@@ -78,7 +100,7 @@ func (state *State) ExtendBooking(confirmationId string, extendTime BookingTime)
 		return nil, fmt.Errorf("booking with confirmationId %v not found", confirmationId)
 	}
 
-	reqStart := booking.EndTime.Add(BookingTime{Minute: 1})
+	reqStart := booking.EndTime
 	reqEnd := booking.EndTime.Add(extendTime)
 	if !facilityState.QueryAvailability(reqStart, reqEnd) {
 		return nil, fmt.Errorf("cannot extend booking with confirmationId %v as there are conflicts", confirmationId)
