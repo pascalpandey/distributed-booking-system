@@ -49,10 +49,10 @@ func (state *State) Book(facility Facility, startTime BookingTime, endTime Booki
 }
 
 // Shifts a booking's start and end times by the given offset if possible
-func (state *State) OffsetBooking(confirmationId string, offsetTime BookingTime) (Observers, error) {
+func (state *State) OffsetBooking(confirmationId string, offsetTime BookingTime) (Observers, *Booking, error) {
 	facilityState, booking := state.getBooking(confirmationId)
 	if booking == nil {
-		return nil, fmt.Errorf("booking with confirmationId %v not found", confirmationId)
+		return nil, nil, fmt.Errorf("booking with confirmationId %v not found", confirmationId)
 	}
 
 	var reqStart, reqEnd BookingTime
@@ -64,28 +64,28 @@ func (state *State) OffsetBooking(confirmationId string, offsetTime BookingTime)
 		reqEnd = booking.EndTime.Subtract(offsetTime)
 	}
 	if !facilityState.QueryAvailability(reqStart, reqEnd, confirmationId) {
-		return nil, fmt.Errorf("cannot offset booking with confirmationId %v as there are conflicts", confirmationId)
+		return nil, nil, fmt.Errorf("cannot offset booking with confirmationId %v as there are conflicts", confirmationId)
 	}
 
 	booking.Offset(offsetTime)
-	return facilityState.Observers, nil
+	return facilityState.Observers, booking, nil
 }
 
 // Extends the booking's end time if there is availability
-func (state *State) ExtendBooking(confirmationId string, extendTime BookingTime) (Observers, error) {
+func (state *State) ExtendBooking(confirmationId string, extendTime BookingTime) (Observers, *Booking, error) {
 	facilityState, booking := state.getBooking(confirmationId)
 	if booking == nil {
-		return nil, fmt.Errorf("booking with confirmationId %v not found", confirmationId)
+		return nil, nil, fmt.Errorf("booking with confirmationId %v not found", confirmationId)
 	}
 
 	reqStart := booking.EndTime
 	reqEnd := booking.EndTime.Add(extendTime)
 	if !facilityState.QueryAvailability(reqStart, reqEnd, confirmationId) {
-		return nil, fmt.Errorf("cannot extend booking with confirmationId %v as there are conflicts", confirmationId)
+		return nil, nil, fmt.Errorf("cannot extend booking with confirmationId %v as there are conflicts", confirmationId)
 	}
 
 	booking.Extend(extendTime)
-	return facilityState.Observers, nil
+	return facilityState.Observers, booking, nil
 }
 
 // Removes a booking and notifies observers

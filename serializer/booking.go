@@ -29,8 +29,8 @@ func DayToString(day state.Day) string {
 }
 
 // Formats booking time as a string without days
-func formatBookingTimeWithoutDay(bookingTime state.BookingTime) string {
-	return fmt.Sprintf("%d/%d", bookingTime.Hour, bookingTime.Minute)
+func formatReadableHourMinute(bookingTime state.BookingTime) string {
+	return fmt.Sprintf("%d hour(s) and %d minute(s)", bookingTime.Hour, bookingTime.Minute)
 }
 
 // Formats booking time as a string with days

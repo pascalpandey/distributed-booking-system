@@ -43,7 +43,7 @@ func TestOffsetBooking(t *testing.T) {
 
 	expected := fmt.Errorf("booking with confirmationId CONF-12345 not found")
 
-	_, err := state.OffsetBooking(confirmationId, offsetTime)
+	_, _, err := state.OffsetBooking(confirmationId, offsetTime)
 
 	if err == nil || err.Error() != expected.Error() {
 		t.Errorf("For params %v, %+v expected %+v, but got %+v", confirmationId, offsetTime, expected, err)
@@ -57,7 +57,7 @@ func TestExtendBooking(t *testing.T) {
 
 	expected := fmt.Errorf("booking with confirmationId CONF-12345 not found")
 
-	_, err := state.ExtendBooking(confirmationId, extendTime)
+	_, _, err := state.ExtendBooking(confirmationId, extendTime)
 
 	if err == nil || err.Error() != expected.Error() {
 		t.Errorf("For params %v, %+v expected %+v, but got %+v", confirmationId, extendTime, expected, err)

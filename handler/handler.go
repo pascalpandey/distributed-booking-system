@@ -67,7 +67,7 @@ func (handler *Handler) HandleMessage(message string, dropReply bool) {
 		observers, confirmationId, err := handler.State.Book(facility, startTime, endTime)
 
 		if err == nil {
-			notification := serializer.NotifyBook(facility, requestId, confirmationId, startTime, endTime)
+			notification := serializer.NotifyBook(confirmationId, startTime, endTime)
 			observers.Notify(notification)
 		}
 
@@ -92,7 +92,7 @@ func (handler *Handler) HandleMessage(message string, dropReply bool) {
 
 	case OffsetBooking:
 		confirmationId, offsetTime := deserializer.ConfirmationIdWithBookingTime(body)
-		observers, err := handler.State.OffsetBooking(confirmationId, offsetTime)
+		observers, booking, err := handler.State.OffsetBooking(confirmationId, offsetTime)
 
 		if handler.ClusterState != nil {
 			success := handler.ClusterState.SendState(backup)
@@ -104,7 +104,7 @@ func (handler *Handler) HandleMessage(message string, dropReply bool) {
 		}
 
 		if err == nil {
-			notification := serializer.NotifyOffset(confirmationId, offsetTime)
+			notification := serializer.NotifyOffset(confirmationId, booking, offsetTime)
 			observers.Notify(notification)
 		}
 
@@ -142,7 +142,7 @@ func (handler *Handler) HandleMessage(message string, dropReply bool) {
 
 	case ExtendBooking:
 		confirmationId, extendTime := deserializer.ConfirmationIdWithBookingTime(body)
-		observers, err := handler.State.ExtendBooking(confirmationId, extendTime)
+		observers, booking, err := handler.State.ExtendBooking(confirmationId, extendTime)
 
 		if handler.ClusterState != nil {
 			success := handler.ClusterState.SendState(backup)
@@ -154,7 +154,7 @@ func (handler *Handler) HandleMessage(message string, dropReply bool) {
 		}
 
 		if err == nil {
-			notification := serializer.NotifyExtend(confirmationId, extendTime)
+			notification := serializer.NotifyExtend(confirmationId, booking, extendTime)
 			observers.Notify(notification)
 		}
 

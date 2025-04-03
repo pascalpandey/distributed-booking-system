@@ -28,7 +28,7 @@ func TestAdd(t *testing.T) {
 
 func TestSubtract(t *testing.T) {
 	bookingTime := BookingTime{Day: Tuesday, Hour: 10, Minute: 30}
-	subtractTime := BookingTime{Day: 1, Hour: 5, Minute: 45}
+	subtractTime := BookingTime{Day: -1, Hour: -5, Minute: -45}
 
 	expected := BookingTime{Day: Monday, Hour: 4, Minute: 45}
 	result := bookingTime.Subtract(subtractTime)
