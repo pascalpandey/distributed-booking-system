@@ -33,6 +33,7 @@ func (clusterState *ClusterState) handleState(message ClusterMessage) {
 			clusterState.DataState = dataState
 			clusterState.saveStateToDisk()
 			clusterState.logDataState()
+			clusterState.populateConn()
 		// else keep it pending until leader sends another message
 		} else {
 			log.Printf("Detected new state, putting state with term %d and id %d to pending...", clusterState.CurrentTerm, dataState.Id)

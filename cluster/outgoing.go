@@ -29,6 +29,9 @@ func (clusterState *ClusterState) revertState(backup string) {
 // Send state to followers for replication
 func (clusterState *ClusterState) SendState(backup string) bool {
 	clusterState.ReplicationLock.Lock()
+
+	log.Println("Starting replication, broadcasting state...")
+
 	clusterState.DataState.Id += 1
 	clusterState.StateAckCount = 1
 	for _, client := range clusterState.ClusterClients {

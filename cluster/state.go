@@ -120,6 +120,7 @@ func (clusterState *ClusterState) loadState() {
 	term, dataState := clusterState.deserializeState(serialized_str)
 	clusterState.CurrentTerm = int32(term)
 	clusterState.DataState = dataState
+	clusterState.populateConn()
 	log.Printf("Loaded state with term %d and log id %d", term, dataState.Id)
 }
 
@@ -131,6 +132,15 @@ func (clusterState *ClusterState) saveStateToDisk() {
 	err := os.WriteFile(filename, []byte(serialized), 0644)
 	if err != nil {
 		log.Printf("Failed to save state to %s: %+v", filename, err)
+	}
+}
+
+// *net.UDPConn is not JSON serializable, modify observers to use global conn
+func (clusterState *ClusterState) populateConn() {
+	for _, facilityState := range clusterState.DataState.State {
+		for _, observers := range facilityState.Observers {
+			observers.Conn = clusterState.ClusterClients[0].Conn
+		}
 	}
 }
 
