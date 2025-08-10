@@ -69,8 +69,8 @@ sc4051-server/
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/pascalpandey/sc4051-server
-   cd sc4051-server
+   git clone https://github.com/pascalpandey/distributed-booking-system
+   cd distributed-booking-system
    ```
 
 2. Install Dependencies
@@ -163,6 +163,7 @@ The client will communicate with the server using a UDP-based protocol. Each mes
 - **Monitor Venue**: `{requestId},MONITOR,{venueName},{duration}`
 
 Client requests are parsed according to specific patterns handled by the deserializers and responses are formatted and serialized according to rules specified in the serializer package to be sent back to the client.
+
 
 
 
