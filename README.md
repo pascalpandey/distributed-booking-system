@@ -1,4 +1,4 @@
-﻿# SC4051 Distributed Systems - Facility Booking System Client
+﻿# SC4051 Distributed Systems - Facility Booking System Server
 
 This is a server implementation for the SC4051 Distributed Systems Course Project: Design and Implementation of A Distributed Facility Booking System at Nanyang Technological University (NTU).
 
@@ -163,5 +163,6 @@ The client will communicate with the server using a UDP-based protocol. Each mes
 - **Monitor Venue**: `{requestId},MONITOR,{venueName},{duration}`
 
 Client requests are parsed according to specific patterns handled by the deserializers and responses are formatted and serialized according to rules specified in the serializer package to be sent back to the client.
+
 
 
